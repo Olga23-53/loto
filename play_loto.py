@@ -1,5 +1,4 @@
 import random
-
 # Карточка игрока
 class Card:
     def __init__(self):
@@ -74,11 +73,11 @@ class Game:
 
             for player in self.players:
                 if not player.make_move(number):
-                    print(f"{player.name} проиграл!")
+                    print(f"{player.name} проиграли!")
                     return
 
                 if player.has_won():
-                    print(f"{player.name} победил!")
+                    print(f"{player.name} победили!")
                     return
 
 
