@@ -1,10 +1,11 @@
 import random
+
 # Карточка игрока
 class Card:
     def __init__(self):
         numbers = random.sample(range(1, 91), 15)
         numbers.sort()
-        self.rows = [numbers[i*5:(i+1)*5] for i in range(3)]
+        self.rows = [numbers[i * 5:(i + 1) * 5] for i in range(3)]
 
     def show(self):
         for row in self.rows:
@@ -23,6 +24,24 @@ class Card:
     def is_complete(self):
         return all(num == 'X' for row in self.rows for num in row)
 
+    def __str__(self):
+        lines = []
+        for row in self.rows:
+            line = " ".join(f"{num:>2}" if isinstance(num, int) else " X" for num in row)
+            lines.append(line)
+        return "\n".join(lines)
+
+    def __eq__(self, other):
+        if not isinstance(other, Card):
+            return False
+        return self.rows == other.rows
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return f"Card(rows={self.rows})"
+
 
 # Игрок
 class Player:
@@ -32,7 +51,7 @@ class Player:
         self.is_human = is_human
 
     def make_move(self, number):
-        print(f"\n{self.name}'s карточка:")
+        print(f"\nКарточка игрока: {self.name}")
         self.card.show()
 
         if self.is_human:
@@ -55,6 +74,21 @@ class Player:
     def has_won(self):
         return self.card.is_complete()
 
+    def __str__(self):
+        player_type = "человек" if self.is_human else "бот"
+        return f"Игрок: {self.name} ({player_type})"
+
+    def __eq__(self, other):
+        if not isinstance(other, Player):
+            return False
+        return self.name == other.name and self.is_human == other.is_human
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return f"Player(name={self.name}, is_human={self.is_human})"
+
 
 # Игра
 class Game:
@@ -73,15 +107,75 @@ class Game:
 
             for player in self.players:
                 if not player.make_move(number):
-                    print(f"{player.name} проиграли!")
+                    if player.name.lower() == "вы":
+                        print("Вы проиграли!")
+                    else:
+                        print(f"{player.name} проиграл!")
                     return
 
                 if player.has_won():
-                    print(f"{player.name} победили!")
+                    if player.name.lower() == "вы":
+                        print("Вы победили!")
+                    else:
+                        print(f"{player.name} победил!")
                     return
 
+    def __str__(self):
+        players_str = "\n".join(str(player) for player in self.players)
+        return f"Игра с игроками:\n{players_str}\nБочонков осталось: {len(self.bag)}"
 
-# Запуск игры
+    def __eq__(self, other):
+        if not isinstance(other, Game):
+            return False
+        return self.players == other.players
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return f"Game(players={self.players}, bag={self.bag})"
+
+    def __len__(self):
+        return len(self.bag)
+
+
 if __name__ == "__main__":
     game = Game()
     game.play()
+
+    # Проверка карточки
+    # card = Card()
+    # print(card)
+
+    # Проверка игрока
+    # player = Player("Вы", is_human=True)
+    # print(player)
+
+    # Проверка сравнения карточек
+    # card1 = Card()
+    # card2 = Card()
+    # print("Карточка 1:")
+    # card1.show()
+    # print("\nКарточка 2:")
+    # card2.show()
+    # print("\nКарточки равны?", card1 == card2)
+
+    # Проверка сравнения игроков
+    # player1 = Player("Вы", is_human=True)
+    # player2 = Player("Вы", is_human=True)
+    # print("Игроки равны?", player1 == player2)
+
+    # Проверка repr карточки
+    # card = Card()
+    # print(repr(card))
+
+    # Проверка __str__ у игры
+    # game = Game()
+    # print(game)
+
+    # Проверка сравнения игр
+    # game1 = Game()
+    # game2 = Game()
+    # print("Игра 1:", game1.players)
+    # print("Игра 2:", game2.players)
+    # print("Игры равны?", game1 == game2)
